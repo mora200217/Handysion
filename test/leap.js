@@ -4,8 +4,6 @@ console.log("Leap Script Done")
 
 // Leap motion main loop
 Leap.loop((frame) => {
-    const output = document.getElementById('output');
-    console.log(output)
-    console.log(frame); 
+    const output = document.getElementById('frameIndicator');
     output.innerHTML = 'Frame: ' + frame.id;
 });

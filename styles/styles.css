@@ -1,0 +1,42 @@
+
+
+*{
+    /* background: black; */
+    /* margin: 2rem; */
+    /* color: white;  */
+
+    
+
+    font-family: 'Raleway', serif;
+
+}
+
+.gradient{
+    background: black; 
+    
+}
+
+
+.title{
+    position: fixed; 
+    bottom: 0px; 
+    margin: 0 0 1.7rem 2.5rem;
+    font-weight: 100;
+    
+    color: white; 
+}
+
+.title-right{
+    position: fixed; 
+    bottom: 0px; 
+    right: 0px; 
+    margin: 0 2.5rem 1.7rem 0;
+    font-weight: 100;
+    
+    color: white; 
+}
+
+.title > h1{
+    font-weight: 800;
+    line-height: 1.5rem;
+}
