@@ -1,5 +1,9 @@
 {
   "dependencies": {
     "@mediapipe/hands": "^0.4.1646424915"
+  },
+  "devDependencies": {
+    "leapjs": "^1.1.1",
+    "npm": "^9.1.3"
   }
 }
