@@ -1,9 +1,16 @@
 // main js
+import * as THREE from 'three'
+// import { Leap} '../node_modules/leapjs/leap-1.1.1'; 
+
+// Leap
+
+// import { Leap } from 'le'
 import  { createBaseGrid }  from "./GUI/grid.js";
 import { createCube } from './GUI/orientationCube.js';
 import { LeapConfig } from "./Leap/config.js";
 import { getAmountOfHands, getMeanPosition, handsPresent, getFirstPosition, getSecondPosition } from './Leap/utils.js';
-
+// import { Leap } from './libs/leapl';
+import { Leap } from './libs/leapjs'
 // Main config for scene 
 const scene = new THREE.Scene();
 const cubeScene = new THREE.Scene();
@@ -94,7 +101,7 @@ window.addEventListener('resize', ()=> {
     camera.aspect = window.innerWidth / window.innerHeight
     camera.updateProjectionMatrix()
     renderer.setSize(window.innerWidth, window.innerHeight)
-    render()
+    // render(); 
 }, false)
 
 /**
@@ -102,8 +109,10 @@ window.addEventListener('resize', ()=> {
  */
 
 // Leap Motion 
-var controller = Leap.loop( frame => frameFunction(frame))
+console.log(Leap)
+var controller = Leap.loop( frame => frameFunction(frame)); 
 LeapConfig(controller); 
+
 
 
 

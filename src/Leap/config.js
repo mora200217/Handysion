@@ -1,5 +1,5 @@
 // Leap Motion 
-
+import {Leap} from 'leapjs'
 export function LeapConfig(controller){
     
     // controller.Loop(() 0)

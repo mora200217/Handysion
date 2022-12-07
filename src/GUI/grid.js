@@ -1,4 +1,5 @@
 // grid.js 
+import * as THREE from 'three'
 
 export function createBaseGrid(scene){
         // Grid 
