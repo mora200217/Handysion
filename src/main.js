@@ -1,9 +1,13 @@
 // main js
+import * as THREE from 'three'
+
 import  { createBaseGrid }  from "./GUI/grid.js";
 import { createCube } from './GUI/orientationCube.js';
 import { LeapConfig } from "./Leap/config.js";
 import { getAmountOfHands, getMeanPosition, handsPresent, getFirstPosition, getSecondPosition } from './Leap/utils.js';
+import * as Leap from 'leapjs'; 
 
+console.log(Leap.vec3)
 // Main config for scene 
 const scene = new THREE.Scene();
 const cubeScene = new THREE.Scene();
@@ -94,7 +98,7 @@ window.addEventListener('resize', ()=> {
     camera.aspect = window.innerWidth / window.innerHeight
     camera.updateProjectionMatrix()
     renderer.setSize(window.innerWidth, window.innerHeight)
-    render()
+    // render(); 
 }, false)
 
 /**
@@ -102,8 +106,10 @@ window.addEventListener('resize', ()=> {
  */
 
 // Leap Motion 
-var controller = Leap.loop( frame => frameFunction(frame))
+console.log(Leap)
+var controller = Leap.loop( frame => frameFunction(frame)); 
 LeapConfig(controller); 
+
 
 
 
@@ -145,8 +151,8 @@ function frameFunction(frame){
     if(getAmountOfHands(frame) == 1){
         let n = frame.hands[0].palmNormal; 
         
-        Leap.vec3.normalize(n, frame.hands[0].palmNormal); 
-        Leap.vec3.scale(n, n, -1); 
+        // Leap.vec3.normalize(n, frame.hands[0].palmNormal); 
+        // Leap.vec3.scale(n, n, -1); 
 
         
 
@@ -155,11 +161,12 @@ function frameFunction(frame){
         let theta = new Array(3); 
         for(let i = 0; i < theta.length; i++){
             if(i == 0 || i == 2)
-                theta[i] = Math.acos(n[i]);  // rads
+                theta[i] = Math.acos(-n[i]);  // rads
             else {
-                theta[i] = Math.acos(n[i]);  // rads
-                console.log(n[i])
+                theta[i] = Math.acos(-n[i]);  // rads
+                
             }
+            console.log(theta[i]); 
         }
 
 
