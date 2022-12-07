@@ -1,4 +1,4 @@
-import { Leap } from 'leapjs'
+import * as Leap from 'leapjs'; 
 
 export function getAmountOfHands(frame){
     return handsPresent(frame) ? frame.hands.length : 0; 
