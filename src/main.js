@@ -7,6 +7,9 @@ import { LeapConfig } from "./Leap/config.js";
 import { getAmountOfHands, getMeanPosition, handsPresent, getFirstPosition, getSecondPosition } from './Leap/utils.js';
 import * as Leap from 'leapjs'; 
 
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'; 
+import model from './models/laberynth.stl'; 
+// import { TrueLiteral } from '../node_modules/typescript/lib/typescript.d';
 console.log(Leap.vec3)
 // Main config for scene 
 const scene = new THREE.Scene();
@@ -23,7 +26,7 @@ let geometrySmall = new THREE.CircleGeometry( CircleUISize * 0.5, 40 );
 let material = new THREE.MeshNormalMaterial( { color: "blue", opacity: 0.6, transparent: true} );
 
 let spinVelocity = 0.001; 
-
+let mesh ; 
 
 let handCube = new THREE.Mesh( geometry, material );
 handCube.visible = false; 
@@ -81,6 +84,8 @@ function animate() {
     requestAnimationFrame( animate );
 
     plane.rotation.y += spinVelocity; 
+    if(mesh !== undefined)
+    mesh.rotation.z += spinVelocity; 
 
     // GUI 
     // cube.rotation.y += 0.01; 
@@ -111,6 +116,44 @@ var controller = Leap.loop( frame => frameFunction(frame));
 LeapConfig(controller); 
 
 
+const loader = new STLLoader()
+loader.load(
+    model,
+    function (geometry) {
+        
+        const ptsMaterial=  new THREE.PointsMaterial({ color: 0xFFFFFF, size: 0.02 }); 
+        const material = new THREE.MeshNormalMaterial(
+            {
+                wireframe: false, 
+                color: 'white', 
+                emissive: 'black',
+                
+                roughness: 1, 
+                vertexColors: true, 
+                
+            }
+            )
+        mesh = new THREE.Mesh(geometry, material)
+
+        mesh.scale.x = 0.015; 
+        mesh.scale.y = 0.015; 
+        mesh.scale.z = 0.015; 
+
+        const l = new THREE.AmbientLight(); 
+        scene.add(l)
+
+        
+
+        mesh.rotation.x = -Math.PI/2
+        scene.add(mesh)
+    },
+    (xhr) => {
+        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+    },
+    (error) => {
+        console.log(error)
+    }
+)
 
 
 
@@ -180,6 +223,14 @@ function frameFunction(frame){
         //cube.rotation.x = 0;
         cube.rotation.y = 0;
         //cube.rotation.z = 0;
+
+        mesh.rotation.x = -theta[2] ; 
+        mesh.rotation.y = theta[0]; 
+        mesh.rotation.y = -(theta[0] - Math.PI/2); 
+        // mesh.rotation.y = theta[0] - Math.PI/2; s
+
+        //cube.rotation.x = 0;
+        mesh.rotation.z =Math.PI/2;
     }
     
 
