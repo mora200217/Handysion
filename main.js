@@ -18,6 +18,9 @@ let geometry = new THREE.CircleGeometry( CircleUISize, 40 );
 let geometrySmall = new THREE.CircleGeometry( CircleUISize * 0.5, 40 );
 let material = new THREE.MeshNormalMaterial( { color: "blue", opacity: 0.6, transparent: true} );
 
+let spinVelocity = 0.001; 
+
+
 let handCube = new THREE.Mesh( geometry, material );
 handCube.visible = false; 
 
@@ -73,11 +76,11 @@ animate(); // Animate
 function animate() {
     requestAnimationFrame( animate );
 
-    plane.rotation.y += 0.001; 
+    plane.rotation.y += spinVelocity; 
 
     // GUI 
-    cube.rotation.y += 0.01; 
-    cube.rotation.z += 0.01; 
+    // cube.rotation.y += 0.01; 
+    // cube.rotation.z += 0.01; 
 
     renderer.render( scene, camera );
     cubeGUIRenderer.render( cubeScene, cubeGUICamera )
@@ -112,12 +115,17 @@ function frameFunction(frame){
         handCube.visible = false;
         handCubeLeft.visible = false; 
         handCubeRight.visible = false;  
+        plane.material.opacity = 0.3; 
+        spinVelocity = 0.001; 
         return; 
     }
     
-    handCube.visible = true; 
-    handCubeLeft.visible = true; 
-    handCubeRight.visible = true; 
+    // When hands are present 
+    spinVelocity = 0;              // base plane angular velocity 
+    plane.material.opacity = 0.1;  // base plane opacity 
+    handCube.visible = true;       // Hand Indicator (Mean) 
+    handCubeLeft.visible = true;   // Hand Indicator (1st) 
+    handCubeRight.visible = true;  // Hand Indicator (2nd) 
 
     if(getAmountOfHands(frame) < 2){
         handCubeLeft.visible = false; 
@@ -126,9 +134,49 @@ function frameFunction(frame){
 
     const pos = getMeanPosition(frame); 
 
+    // TODO: Change HandCube name to handIndicator or something like that 
     handCube.position.x = pos[0] / 100; 
     handCube.position.y = pos[1] / 100; 
     handCube.position.z = pos[2] / 100; 
+
+    // getHand Orientation 
+    // Angle for Rotation in THREEjs in radians 
+    // Math.acos in radians too :D
+    if(getAmountOfHands(frame) == 1){
+        let n = frame.hands[0].palmNormal; 
+        
+        Leap.vec3.normalize(n, frame.hands[0].palmNormal); 
+        Leap.vec3.scale(n, n, -1); 
+
+        
+
+
+        // Directions 
+        let theta = new Array(3); 
+        for(let i = 0; i < theta.length; i++){
+            if(i == 0 || i == 2)
+                theta[i] = Math.acos(n[i]);  // rads
+            else {
+                theta[i] = Math.acos(n[i]);  // rads
+                console.log(n[i])
+            }
+        }
+
+
+
+        // console.log(`Angle: ${theta}`); 
+        
+        cube.rotation.x = -theta[2] + Math.PI/2; 
+        cube.rotation.y = theta[0]; 
+        cube.rotation.z = theta[0] - Math.PI/2; 
+
+        //cube.rotation.x = 0;
+        cube.rotation.y = 0;
+        //cube.rotation.z = 0;
+    }
+    
+
+    
 
     let pos1, pos2; 
 
