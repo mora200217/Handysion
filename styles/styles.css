@@ -40,3 +40,11 @@
     font-weight: 800;
     line-height: 1.5rem;
 }
+
+.cubeRenderer{
+    position: absolute; 
+    z-index: 2;
+    top: 0px; 
+    left: 0px; 
+    margin: 20px
+}
