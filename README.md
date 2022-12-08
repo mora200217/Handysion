@@ -3,6 +3,8 @@ _HandTracking Sensor Fusion System_
 
 Handysion, is a JS Leap Motion Sensor Fusion, using Mediapipe Hand tracking system to expand the possible hand gestures. It allows to identify overlaping complex hand positions impossible to detect only with the Leap motion (LM) system. It basically takes the computer's frontal camera, to __estimate__ the hand key points distribution, and fuse them with the LM data. 
 
+<img src = "https://github.com/mora200217/Handysion/blob/master/docs/laberynth-fusion.png" /> 
+
 > This repository includes the documentation, and source code for Handysion, our __Sensors and Actuator Final Project__ at Universidad Nacional de Colombia - Sede Bogotá 
 
 ## Startup-Guide 
