@@ -46,6 +46,21 @@ handCube.visible = false;
 let handCubeLeft = new THREE.Mesh( geometrySmall, material );
 let handCubeRight = new THREE.Mesh( geometrySmall, material );
 
+// WebSocket 
+const WEBSOCKET_URL = 'wss://demo.piesocket.com/v3/channel_123?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self'; 
+const ws = new WebSocket(WEBSOCKET_URL); 
+
+ws.addEventListener('open', e => {
+    console.log(e)
+    // ws.send('')
+}); 
+
+ws.addEventListener('close', e => {
+    alert('closed')
+}); 
+
+
+
 handCubeLeft.visible = false; 
 handCubeRight.visible = false; 
 
@@ -316,6 +331,15 @@ function frameFunction(frame){
 
         //cube.rotation.x = 0;
         mesh.rotation.z =Math.PI/2;
+        
+        
+        const data = {
+            'pitch': theta[2], 
+            'roll': theta[0] 
+        }; 
+        const dataString = JSON.stringify(data); 
+        console.log(dataString); 
+        ws.send(dataString);
 
         
     }
