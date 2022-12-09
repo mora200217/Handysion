@@ -1,0 +1,33 @@
+.modal-main{
+    background: black;
+    
+    z-index: 3;
+    width: 100vw;
+    height: 100vh;
+    position:fixed;
+    margin: auto;
+    top: 0px; 
+    left: 0px; 
+    right: 0px; 
+    bottom:0px;
+    padding: 3rem; 
+    opacity: 1;
+    transition: .3s cubic-bezier(0.165, 0.84, 0.44, 1);
+   
+}
+
+.modal-main > p{
+    color: white;
+    opacity: 100 !important; 
+    line-height: 2rem;
+   
+}
+
+
+.hide{
+    transition: .3s cubic-bezier(0.165, 0.84, 0.44, 1); 
+    opacity: 0;
+    z-index: -20;
+}
+
+

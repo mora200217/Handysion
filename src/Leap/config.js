@@ -14,9 +14,14 @@ function attachListeners(controller){
 
     controller.on('streamingStarted', (frame) => {
         console.log('Leap Motion Connected'); 
+        const modal = document.getElementById('modal-leap'); 
+        modal.classList.add('hide');
     }); 
 
     controller.on('streamingStopped', (frame) => {
         console.log('Leap Motion Disconnected/Paused'); 
+
+        const modal = document.getElementById('modal-leap'); 
+        modal.classList.remove('hide');
     }); 
 }
