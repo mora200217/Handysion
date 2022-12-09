@@ -9,8 +9,18 @@ import * as Leap from 'leapjs';
 
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'; 
 import model from './models/laberynth.stl'; 
-// import { TrueLiteral } from '../node_modules/typescript/lib/typescript.d';
-console.log(Leap.vec3)
+
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { defineTrajectory, TrajectoryManager } from './GUI/cameraMovement.js';
+// import Stats from 'three/examples/jsm/libs/stats.module'
+
+let isCameraInTrajectory = false; 
+let cameraTrajectory = null; 
+let reachedTarget = false; 
+let end = new THREE.Vector3(0, 3, 0); 
+
+const trajectoryManager = new TrajectoryManager(); 
+
 // Main config for scene 
 const scene = new THREE.Scene();
 const cubeScene = new THREE.Scene();
@@ -27,6 +37,8 @@ let material = new THREE.MeshNormalMaterial( { color: "blue", opacity: 0.6, tran
 
 let spinVelocity = 0.001; 
 let mesh ; 
+
+const controls = new OrbitControls( camera, renderer.domElement );
 
 let handCube = new THREE.Mesh( geometry, material );
 handCube.visible = false; 
@@ -63,6 +75,14 @@ let plane = createBaseGrid(scene);
 let cube = createCube(cubeScene, cubeGUIRenderer); 
 
 // Camera positions 
+const cameraInitialPosition = new THREE.Vector3(0, 1, 3); 
+const cameraInitialRotation = new THREE.Vector3(-0.2, 0, 0); 
+
+const cameraInitialAttitude = {
+    'position': cameraInitialPosition, 
+    'rotation': cameraInitialRotation
+}
+
 camera.position.z = 3
 camera.position.y = 1; 
 camera.rotation.x = -0.2; 
@@ -83,16 +103,41 @@ animate(); // Animate
 function animate() {
     requestAnimationFrame( animate );
 
-    plane.rotation.y += spinVelocity; 
-    if(mesh !== undefined)
-    mesh.rotation.z += spinVelocity; 
-
-    // GUI 
-    // cube.rotation.y += 0.01; 
-    // cube.rotation.z += 0.01; 
-
     renderer.render( scene, camera );
     cubeGUIRenderer.render( cubeScene, cubeGUICamera )
+    // Current positoin 
+    // Final Position
+
+    // animate camera
+    if(isCameraInTrajectory){
+        
+        if(controls.target != mesh.position)
+            controls.target = mesh.position;   
+        controls.update()
+        // Trajectory 
+
+        if(!reachedTarget){
+            // console.log(reachedTarget)
+            const start = camera.position; 
+            // const end   = new THREE.Vector3(0, 3, 0); 
+            
+            const lambda = new THREE.Vector3().subVectors(end, start); 
+            const vel = 0.03; 
+            const d = camera.position.distanceTo(end)
+
+            // cameraTrajectory = defineTrajectory(start, end, vel); 
+            // console.log(camera.position.add(lambda.normalize().multiplyScalar(vel)))
+            camera.position.add(lambda.normalize().multiplyScalar(vel * d))
+            
+            
+            if(d <= 0.01){
+                reachedTarget = true; 
+                // console.log("NICE")
+            }
+        }
+    }
+
+    controls.update()
 };
 
 
@@ -111,11 +156,19 @@ window.addEventListener('resize', ()=> {
  */
 
 // Leap Motion 
-console.log(Leap)
+// console.log(Leap)
 var controller = Leap.loop( frame => frameFunction(frame)); 
 LeapConfig(controller); 
 
+// camera.position.set( 0, 20, 100 );
+controls.autoRotate = false; 
 
+controls.update()
+// setTimeout(() => {camera.position.set( 0, 20, 100 ); }, 2000)
+
+/**
+ * STL Loader
+ */
 const loader = new STLLoader()
 loader.load(
     model,
@@ -148,7 +201,7 @@ loader.load(
         scene.add(mesh)
     },
     (xhr) => {
-        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+        // console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
     },
     (error) => {
         console.log(error)
@@ -157,17 +210,49 @@ loader.load(
 
 
 
+// Orbit controls 
+// controls.target.set(mesh.position)
 
+
+/**
+ *  Frame Function for Leap 
+ * 
+ *  Invoked each frame lecture for the Leap Motion 
+ * 
+ * @param {*} frame 
+ * @returns 
+ */
 function frameFunction(frame){
 
     if(!handsPresent(frame)){
+        // mesh.rotation.z = Math.PI/2; 
+        // mesh.rotation.y = 0;
+
         handCube.visible = false;
         handCubeLeft.visible = false; 
         handCubeRight.visible = false;  
         plane.material.opacity = 0.3; 
         spinVelocity = 0.001; 
+        isCameraInTrajectory = true; 
+        reachedTarget = false; 
+        end = new THREE.Vector3(0, 3, 0); 
+        controls.autoRotate = true; // Resume Camera rotation
+        
+
+        // console.log(camera.position)
         return; 
     }
+    reachedTarget = false; 
+    end = new THREE.Vector3(0, 1, 3); 
+    isCameraInTrajectory = true; 
+    controls.autoRotate = false; // No Camera Rotation
+    // camera.position.x = cameraInitialPosition.x; 
+    // camera.position.y = cameraInitialPosition.y; 
+    // camera.position.z = cameraInitialPosition.z; 
+    
+    // camera.rotation.x = cameraInitialRotation.x;
+    // camera.rotation.y = cameraInitialRotation.y;
+    // camera.rotation.z = cameraInitialRotation.z;
     
     // When hands are present 
     spinVelocity = 0;              // base plane angular velocity 
@@ -209,7 +294,7 @@ function frameFunction(frame){
                 theta[i] = Math.acos(-n[i]);  // rads
                 
             }
-            console.log(theta[i]); 
+            // console.log(theta[i]); 
         }
 
 
@@ -231,6 +316,8 @@ function frameFunction(frame){
 
         //cube.rotation.x = 0;
         mesh.rotation.z =Math.PI/2;
+
+        
     }
     
 
